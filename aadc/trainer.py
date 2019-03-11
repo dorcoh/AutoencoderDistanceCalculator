@@ -23,9 +23,6 @@ class Trainer:
         elif model_name == 'relu_autoencoder':
             self.model = ReluAutoencoder()
 
-        if torch.cuda.is_available():
-            self.model = self.model.cuda()
-
         self.criterion = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=1e-5)
 
@@ -34,10 +31,7 @@ class Trainer:
             for data in islice(self.dataloader, self.num_samples):
                 img, _ = data
                 img = img.view(img.size(0), -1)
-                if torch.cuda.is_available():
-                    img = Variable(img).cuda()
-                else:
-                    img = Variable(img)
+                img = Variable(img)
                 # ===================forward=====================
                 output = self.model(img)
                 loss = self.criterion(output, img)

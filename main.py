@@ -6,6 +6,8 @@ import sys
 
 
 def main(argv):
+    print('Original Distances will be saved to: ', argv[1])
+    print('Encoded Distances will be saved to: ', argv[2])
     try:
         if argv[0] == 'a':
             model_name = 'linear_autoencoder'
@@ -18,9 +20,9 @@ def main(argv):
         sys.exit(1)
 
     # dev
-    num_samples = 15
-    num_epochs = 1
-    batch_size = 1
+    num_samples = 60000
+    num_epochs = 50
+    batch_size = 256
     learning_rate = 1e-3
     top_n_elemnts = [5, 10, 15, 20]
 
@@ -36,6 +38,7 @@ def main(argv):
     calc = DistanceCalculator(num_samples=num_samples)
     calc.evaluate_model(dataloader, model.encoder)
     calc.compute_distances()
+    calc.save_distances(original_name=argv[1], encoded_name=argv[2])
     origin, encoded = calc.get_distances()
     for n in top_n_elemnts:
         compute_score(origin, encoded, n)

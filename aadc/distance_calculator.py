@@ -1,3 +1,5 @@
+import pickle
+
 import torch
 from torch.autograd import Variable
 from copy import copy
@@ -25,10 +27,7 @@ class DistanceCalculator:
         for data in islice(dataloader, self.num_samples):
             img, labels = data
             img = img.view(img.size(0), -1)
-            if torch.cuda.is_available():
-                img = Variable(img).cuda()
-            else:
-                img = Variable(img)
+            img = Variable(img)
             # ===================forward=====================
             output = encoder(img)
             arr = output.detach().numpy()
@@ -44,22 +43,20 @@ class DistanceCalculator:
         self.results = results
         self.origin = origin
 
-    def compute_distance(self, elements, size=1000):
+    def compute_distance(self, elements, size=200):
         """
         elements: concatenated array of N samples with shape (N, dimension)
         """
-        distances = {}
         min_distances = {}
+
         for idx_f, item_f in enumerate(elements):
-            distances[idx_f] = []
+            distances_tmp = []
             for item_s in elements:
-                distances[idx_f].append(float(np.linalg.norm(item_f - item_s)))
+                distances_tmp.append(float(np.linalg.norm(item_f - item_s)))
 
-            if idx_f % 10000 == 0:
-                print(idx_f)
-            min_distances[idx_f] = sorted(range(len(distances[idx_f])), key=lambda i: distances[idx_f][i])[1:size]
+            min_distances[idx_f] = sorted(range(len(distances_tmp)), key=lambda i: distances_tmp[i])[1:size]
 
-        return min_distances, distances
+        return min_distances
 
     def compute_numpy_distances(self, elements):
         # TODO: check distances make sense, complete implementation
@@ -69,10 +66,10 @@ class DistanceCalculator:
         return distances_matrix[sorted_indices]
 
     def compute_origin_distance(self):
-        self.original_distances, self.original_min_distances = self.compute_distance(self.origin)
+        self.original_min_distances = self.compute_distance(self.origin)
 
     def compute_encoded_distance(self):
-        self.encoded_distances, self.encoded_min_distances = self.compute_distance(self.results)
+        self.encoded_min_distances = self.compute_distance(self.results)
 
     def compute_distances(self):
         self.compute_origin_distance()
@@ -80,3 +77,12 @@ class DistanceCalculator:
 
     def get_distances(self):
         return self.original_min_distances, self.encoded_min_distances
+
+    @staticmethod
+    def _save_distances(distances, name):
+        with open('{pickle_name}.pkl'.format(pickle_name=name), 'wb') as handle:
+            pickle.dump(distances, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def save_distances(self, original_name, encoded_name):
+        self._save_distances(self.original_min_distances, name=original_name)
+        self._save_distances(self.encoded_min_distances, name=encoded_name)
