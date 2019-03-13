@@ -3,13 +3,15 @@ from torch import nn
 from torch.autograd import Variable
 from itertools import islice
 from .model import LinearAutoencoder, ReluAutoencoder
+from .data import get_datalodaer
 
 
 class Trainer:
-    def __init__(self, num_epochs, num_samples, dataloader, learning_rate, model_name):
+    def __init__(self, num_epochs, num_samples, batch_size, learning_rate, model_name):
         self.num_epochs = num_epochs
         self.num_samples = num_samples
-        self.dataloader = dataloader
+        self.batch_size = batch_size
+        self.dataloader = get_datalodaer(batch_size, normalize=True, shuffle=True)
         self.learning_rate = learning_rate
         self.optimizer = None
         self.criterion = None
