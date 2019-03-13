@@ -46,6 +46,7 @@ def main(argv):
     origin, encoded = calc.get_distances()
     estimators = compute_estimators(origin, encoded)
     pprint_dict(estimators)
+    compute_score(origin, encoded, 10)
     # for n in top_n_elemnts:
     #     compute_score(origin, encoded, n)
 
