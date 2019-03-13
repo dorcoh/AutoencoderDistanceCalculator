@@ -1,7 +1,8 @@
 from aadc.trainer import Trainer
 from aadc.distance_calculator import DistanceCalculator
-from aadc.metrics import compute_score
+from aadc.metrics import compute_score, compute_estimators
 from aadc.loader import test_load_distances
+from aadc.utils import pprint_dict
 import sys
 
 
@@ -42,7 +43,9 @@ def main(argv):
 
     test_load_distances(original_fname=origin_fname+'.pkl', encoded_fname=encoded_fname+'.pkl')
 
-    # origin, encoded = calc.get_distances()
+    origin, encoded = calc.get_distances()
+    estimators = compute_estimators(origin, encoded)
+    pprint_dict(estimators)
     # for n in top_n_elemnts:
     #     compute_score(origin, encoded, n)
 

@@ -61,11 +61,7 @@ class DistanceCalculator:
     def _compute_distance(elements):
         distances_dict = dict()
         distances_dict['cityblock'] = distance.pdist(elements, 'cityblock')
-        distances_dict['cityblock_avg'] = np.average(distances_dict['cityblock'])
-        distances_dict['cityblock_std'] = np.std(distances_dict['cityblock'])
         distances_dict['euclidean'] = distance.pdist(elements, 'euclidean')
-        distances_dict['euclidean_avg'] = np.average(distances_dict['euclidean'])
-        distances_dict['euclidean_std'] = np.std(distances_dict['euclidean'])
         return distances_dict
 
     def _compute_origin_distance(self):
