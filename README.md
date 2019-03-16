@@ -4,6 +4,7 @@
 
 - pytorch
 - numpy
+- scipy
 - matplotlib
 
 ### Usage
