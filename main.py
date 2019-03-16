@@ -31,9 +31,9 @@ def main(argv):
         print('Valid loss functions are: L1 or MSE')
         sys.exit(1)
 
-    num_samples = 5
-    num_epochs = 1
-    batch_size = 1
+    num_samples = 60000
+    num_epochs = 100
+    batch_size = 128
     learning_rate = 1e-3
 
     trainer = Trainer(num_epochs=num_epochs, num_samples=num_samples, batch_size=batch_size,
