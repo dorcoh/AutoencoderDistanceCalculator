@@ -14,6 +14,10 @@ def main(argv):
             model_name = 'relu_autoencoder'
         origin_fname = argv[1]
         encoded_fname = argv[2]
+        loss_function = argv[3]
+        if loss_function not in ['L1', 'MSE']:
+            print('Valid loss functions are L1 or MSE')
+            sys.exit(1)
         print('Original Distances will be saved to: ', argv[1])
         print('Encoded Distances will be saved to: ', argv[2])
     except:
@@ -31,7 +35,7 @@ def main(argv):
     top_n_elemnts = [5, 10, 15, 20]
 
     trainer = Trainer(num_epochs=num_epochs, num_samples=num_samples, batch_size=batch_size,
-                      learning_rate=learning_rate, model_name=model_name)
+                      learning_rate=learning_rate, model_name=model_name, loss=loss_function)
 
     trainer.train()
     model = trainer.get_model()

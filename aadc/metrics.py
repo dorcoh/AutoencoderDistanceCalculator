@@ -25,7 +25,7 @@ def compute_score(origin, encoded, n=1):
     scores = {}
     for name, samples in {'origin': origin, 'encoded': encoded}.items():
         for dist_type, dist_vector in samples.items():
-            dist_matrix =  distance.squareform(dist_vector)
+            dist_matrix = distance.squareform(dist_vector)
             np.fill_diagonal(dist_matrix, np.inf)
             sorted_indices_matrix = np.argpartition(dist_matrix, list(range(dist_matrix.shape[0])), axis=1)
             trunc_sorted_indices_matrix = sorted_indices_matrix[:, :-n]
@@ -33,4 +33,3 @@ def compute_score(origin, encoded, n=1):
 
     # TODO: check the intersection between origin/encoded in trunc_sorted_indices_matrix (must change n to be > 1)
     pass
-

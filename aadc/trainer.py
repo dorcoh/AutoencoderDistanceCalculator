@@ -10,7 +10,7 @@ import os
 
 
 class Trainer:
-    def __init__(self, num_epochs, num_samples, batch_size, learning_rate, model_name):
+    def __init__(self, num_epochs, num_samples, batch_size, learning_rate, model_name, loss='MSE'):
         self.num_epochs = num_epochs
         self.num_samples = num_samples
         self.batch_size = batch_size
@@ -21,14 +21,18 @@ class Trainer:
         self.model = None
         self.model_name = model_name
         self.prepare(self.model_name)
+        self.loss = loss
 
     def prepare(self, model_name):
         if model_name == 'linear_autoencoder':
             self.model = LinearAutoencoder()
         elif model_name == 'relu_autoencoder':
             self.model = ReluAutoencoder()
+        if self.loss == 'MSE':
+            self.criterion = nn.MSELoss()
+        elif self.loss == 'L1':
+            self.criterion = nn.L1Loss
 
-        self.criterion = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=1e-5)
 
     def train(self, save_imgs_flag=True):
