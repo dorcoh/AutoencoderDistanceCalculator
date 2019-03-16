@@ -20,22 +20,23 @@ class Trainer:
         self.criterion = None
         self.model = None
         self.model_name = model_name
-        self.prepare(self.model_name)
         self.loss = loss
+        self.prepare(self.model_name)
 
     def prepare(self, model_name):
-        if model_name == 'linear_autoencoder':
+        if 'linear_autoencoder' in model_name:
             self.model = LinearAutoencoder()
-        elif model_name == 'relu_autoencoder':
+        elif 'relu_autoencoder' in model_name:
             self.model = ReluAutoencoder()
         if self.loss == 'MSE':
             self.criterion = nn.MSELoss()
         elif self.loss == 'L1':
-            self.criterion = nn.L1Loss
+            self.criterion = nn.L1Loss()
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=1e-5)
 
     def train(self, save_imgs_flag=True):
+        print("Started training for model name: ", self.model_name)
         for epoch in range(self.num_epochs):
             for data in islice(self.dataloader, self.num_samples):
                 img, _ = data
