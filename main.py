@@ -9,26 +9,23 @@ import sys
 
 def main(argv):
     try:
-        origin_fname = argv[1]
-        encoded_fname = argv[2]
-        loss_function = argv[3]
+        model_key = argv[0]
+        loss_function = argv[1]
 
         if loss_function not in ['L1', 'MSE']:
             raise Exception
 
-        if argv[0] == 'a':
+        if model_key == 'a':
             model_name = 'linear_autoencoder' + '_' + loss_function
-        elif argv[0] == 'b':
+        elif model_key == 'b':
             model_name = 'relu_autoencoder' + '_' + loss_function
 
-        print('Original Distances will be saved to: ', argv[1])
-        print('Encoded Distances will be saved to: ', argv[2])
     except:
-        print('usage: python main.py <model_key> <original_distances_fname> <encoded_distances_fname> <loss_function>')
+        print('usage: python main.py <model_key> <loss_function>')
         print('model keys: ')
         print('a - linear autoencoder')
         print('b - autoencoder with relu activation functions')
-        print('Valid loss functions are: L1 or MSE')
+        print('loss functions: L1 or MSE')
         sys.exit(1)
 
     num_samples = 60000
@@ -43,12 +40,10 @@ def main(argv):
     model = trainer.get_model()
     plot_encoded_results(model.encoder, model_name, num_samples, batch_size)
 
-    calc = DistanceCalculator(num_samples=num_samples, batch_size=batch_size)
+    calc = DistanceCalculator(num_samples=num_samples, batch_size=batch_size, model_name=model_name)
     calc.evaluate(model.encoder)
     calc.compute_distances()
-    calc.save_distances(original_name=origin_fname, encoded_name=encoded_fname)
-
-    # test_load_distances(original_fname=origin_fname+'.pkl', encoded_fname=encoded_fname+'.pkl')
+    calc.save_distances()
 
     origin, encoded = calc.get_distances()
     estimators = compute_estimators(origin, encoded)

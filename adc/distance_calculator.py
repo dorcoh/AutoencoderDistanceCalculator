@@ -9,8 +9,9 @@ from .data import get_datalodaer
 
 
 class DistanceCalculator:
-    def __init__(self, num_samples, batch_size):
+    def __init__(self, num_samples, batch_size, model_name):
         self.num_samples = num_samples
+        self.model_name = model_name
 
         self.results = None
         self.origin = None
@@ -82,6 +83,8 @@ class DistanceCalculator:
         with open('{pickle_name}.pkl'.format(pickle_name=name), 'wb') as handle:
             pickle.dump(distances, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def save_distances(self, original_name, encoded_name):
+    def save_distances(self):
+        original_name = self.model_name + '_original_distances'
+        encoded_name = self.model_name + '_encoded_distances'
         self._save_distances(self.original_distances, name=original_name)
         self._save_distances(self.encoded_distances, name=encoded_name)
