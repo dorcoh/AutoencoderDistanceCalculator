@@ -1,9 +1,9 @@
-from aadc.trainer import Trainer
-from aadc.distance_calculator import DistanceCalculator
-from aadc.metrics import compute_score, compute_estimators
-from aadc.loader import test_load_distances
-from aadc.utils import pprint_dict
-from aadc.plotter import plot_encoded_results
+from adc.trainer import Trainer
+from adc.distance_calculator import DistanceCalculator
+from adc.metrics import compute_score, compute_estimators
+from adc.loader import test_load_distances
+from adc.utils import pprint_dict
+from adc.plotter import plot_encoded_results
 import sys
 
 
