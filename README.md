@@ -1,4 +1,4 @@
-# AutoencoderDistanceCalculator WIP
+# AutoencoderDistanceCalculator
 
 ### Requirements
 
