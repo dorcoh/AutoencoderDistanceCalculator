@@ -6,7 +6,7 @@ import numpy as np
 from itertools import islice
 from scipy.spatial import distance
 from .data import get_datalodaer
-
+import torch
 
 class DistanceCalculator:
     def __init__(self, num_samples, batch_size, model_name):
@@ -42,7 +42,10 @@ class DistanceCalculator:
         for data in islice(self.dataloader_normalized, self.num_samples):
             img, labels = data
             img = img.view(img.size(0), -1)
-            img = Variable(img)
+            if torch.cuda.is_available():
+                img = Variable(img).cuda()
+            else:
+                img = Variable(img)
             # ===================forward=====================
             output = encoder(img)
             arr = output.detach().numpy()

@@ -41,7 +41,10 @@ class Trainer:
             for data in islice(self.dataloader, self.num_samples):
                 img, _ = data
                 img = img.view(img.size(0), -1)
-                img = Variable(img)
+                if torch.cuda.is_available():
+                    img = Variable(img).cuda()
+                else:
+                    img = Variable(img)
                 # ===================forward=====================
                 output = self.model(img)
                 loss = self.criterion(output, img)
