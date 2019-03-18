@@ -33,6 +33,9 @@ class Trainer:
         elif self.loss == 'L1':
             self.criterion = nn.L1Loss()
 
+        if torch.cuda.is_available():
+            self.model = self.model.cuda()
+
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=1e-5)
 
     def train(self, save_imgs_flag=True):
