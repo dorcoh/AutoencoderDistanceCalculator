@@ -28,7 +28,7 @@ class DistanceCalculator:
             img, labels = data
             img = img.view(img.size(0), -1)
             img = Variable(img)
-            flat_img = img.detach().numpy()
+            flat_img = img.detach().cpu().numpy()
             if i == 0:
                 origin = copy(flat_img)
             else:
