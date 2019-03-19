@@ -48,7 +48,7 @@ class DistanceCalculator:
                 img = Variable(img)
             # ===================forward=====================
             output = encoder(img)
-            arr = output.detach().numpy()
+            arr = output.detach().cpu().numpy()
             if i == 0:
                 results = copy(arr)
             else:

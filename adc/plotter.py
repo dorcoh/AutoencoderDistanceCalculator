@@ -38,12 +38,12 @@ def test_model(encoder, num_samples, batch_size):
             img = Variable(img)
         # ===================forward=====================
         output = encoder(img)
-        arr = output.detach().numpy()
+        arr = output.detach().cpu().numpy()
         if i == 0:
             results = copy(arr)
         else:
             results = np.concatenate([results, arr])
         i += 1
 
-    labels_list = [a.detach().numpy() for a in labels_list]
+    labels_list = [a.detach().cpu().numpy() for a in labels_list]
     return results, np.array(labels_list).squeeze()
