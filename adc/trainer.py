@@ -2,10 +2,11 @@ import torch
 from torch import nn
 from torch.autograd import Variable
 from torchvision.utils import save_image
-from itertools import islice
+import pandas as pd
 from .model import LinearAutoencoder, ReluAutoencoder
 from .data import get_datalodaer
 from .utils import to_img
+from .loader import save_checkpoint
 import os
 
 
@@ -14,13 +15,14 @@ class Trainer:
         self.num_epochs = num_epochs
         self.num_samples = num_samples
         self.batch_size = batch_size
-        self.dataloader = get_datalodaer(batch_size, normalize=True, shuffle=True)
+        self.dataloader = get_datalodaer(batch_size, num_samples, normalize=True, shuffle=True)
         self.learning_rate = learning_rate
         self.optimizer = None
         self.criterion = None
         self.model = None
         self.model_name = model_name
         self.loss = loss
+        self.report_df = pd.DataFrame(columns=['epoch', 'loss'])
         self.prepare(self.model_name)
 
     def prepare(self, model_name):
@@ -41,7 +43,7 @@ class Trainer:
     def train(self, save_imgs_flag=True):
         print("Started training for model name: ", self.model_name)
         for epoch in range(self.num_epochs):
-            for data in islice(self.dataloader, self.num_samples):
+            for data in self.dataloader:
                 img, _ = data
                 img = img.view(img.size(0), -1)
                 if torch.cuda.is_available():
@@ -58,12 +60,14 @@ class Trainer:
             # ===================log========================
             print('epoch [{}/{}], loss:{:.4f}'
                   .format(epoch + 1, self.num_epochs, loss.data.item()))
+            self.report_df.loc[epoch + 1] = [epoch+1, loss.data.item()]
 
             if save_imgs_flag and epoch % 10 == 0:
                 self.save_images(output, epoch)
 
         model_filename = './' + self.model_name + '.pth'
-        torch.save(self.model.state_dict(), model_filename)
+        save_checkpoint(self.model, self.optimizer, epoch, model_filename)
+        self.report_df.to_csv('report_df_{}.csv'.format(self.model_name), index=False)
 
     def get_model(self):
         return self.model

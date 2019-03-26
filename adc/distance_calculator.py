@@ -8,6 +8,7 @@ from scipy.spatial import distance
 from .data import get_datalodaer
 import torch
 
+
 class DistanceCalculator:
     def __init__(self, num_samples, batch_size, model_name):
         self.num_samples = num_samples
@@ -16,15 +17,15 @@ class DistanceCalculator:
         self.results = None
         self.origin = None
 
-        self.dataloader = get_datalodaer(batch_size)
-        self.dataloader_normalized = get_datalodaer(batch_size, normalize=True)
+        self.dataloader = get_datalodaer(batch_size, num_samples)
+        self.dataloader_normalized = get_datalodaer(batch_size, num_samples, normalize=True)
 
         self.original_distances = {}
         self.encoded_distances = {}
 
     def _get_original_samples(self):
         i = 0
-        for data in islice(self.dataloader, self.num_samples):
+        for data in self.dataloader:
             img, labels = data
             img = img.view(img.size(0), -1)
             img = Variable(img)
@@ -39,7 +40,7 @@ class DistanceCalculator:
 
     def _evaluate_model(self, encoder):
         i = 0
-        for data in islice(self.dataloader_normalized, self.num_samples):
+        for data in self.dataloader_normalized:
             img, labels = data
             img = img.view(img.size(0), -1)
             if torch.cuda.is_available():

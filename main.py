@@ -1,7 +1,6 @@
 from adc.trainer import Trainer
 from adc.distance_calculator import DistanceCalculator
-from adc.metrics import compute_score, compute_estimators
-from adc.loader import test_load_distances
+from adc.metrics import compute_estimators
 from adc.utils import pprint_dict
 from adc.plotter import plot_encoded_results
 import sys
@@ -28,9 +27,9 @@ def main(argv):
         print('loss functions: L1 or MSE')
         sys.exit(1)
 
-    num_samples = 60000
-    num_epochs = 100
-    batch_size = 128
+    num_samples = 60
+    num_epochs = 10
+    batch_size = 10
     learning_rate = 1e-3
 
     trainer = Trainer(num_epochs=num_epochs, num_samples=num_samples, batch_size=batch_size,

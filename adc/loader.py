@@ -1,5 +1,6 @@
 import pickle
 from scipy.spatial import distance
+import torch
 
 
 def load_pickle(filename):
@@ -32,3 +33,21 @@ def test_load_distances(original_fname='dev_orig.pkl', encoded_fname='dev_encd.p
     for key, value in load_distances(encoded_fname).items():
         print(key)
         print(value)
+
+
+def save_checkpoint(model, optimizer, epoch, filepath):
+    state = {
+        'epoch': epoch,
+        'state_dict': model.state_dict(),
+        'optimizer': optimizer.state_dict()
+    }
+    torch.save(state, filepath)
+
+
+def load_checkpoint(model, optimizer, filepath):
+    state = torch.load(filepath, lambda storage, loc: storage)
+    model.load_state_dict(state['state_dict'])
+    optimizer.load_state_dict(state['optimizer'])
+    epoch = state['epoch']
+
+    return model, optimizer, epoch
