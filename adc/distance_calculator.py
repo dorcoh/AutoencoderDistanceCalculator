@@ -65,9 +65,25 @@ class DistanceCalculator:
     @staticmethod
     def _compute_distance(elements):
         distances_dict = dict()
-        distances_dict['cityblock'] = distance.pdist(elements, 'cityblock')
-        distances_dict['euclidean'] = distance.pdist(elements, 'euclidean')
+        distances_dict['cityblock'] = _compute_norm(elements, 1)
+        distances_dict['euclidean'] =_compute_norm(elements, 2)
         return distances_dict
+
+    @staticmethod
+    def _compute_norm(elements, size=200, norm=2):
+        """
+        elements: concatenated array of N samples with shape (N, dimension)
+        """
+        min_distances = {}
+
+        for idx_f, item_f in enumerate(elements):
+            distances_tmp = []
+            for item_s in elements:
+                distances_tmp.append(float(np.linalg.norm(item_f - item_s, ord=norm)))
+
+            min_distances[idx_f] = sorted(range(len(distances_tmp)), key=lambda i: distances_tmp[i])[1:size]
+
+        return min_distances
 
     def _compute_origin_distance(self):
         self.original_distances = self._compute_distance(self.origin)
