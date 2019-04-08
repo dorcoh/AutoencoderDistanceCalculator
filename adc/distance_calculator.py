@@ -3,7 +3,6 @@ import pickle
 from torch.autograd import Variable
 from copy import copy
 import numpy as np
-from itertools import islice
 from scipy.spatial import distance
 from .data import get_datalodaer
 import torch
@@ -25,18 +24,23 @@ class DistanceCalculator:
 
     def _get_original_samples(self):
         i = 0
+        labels = []
         for data in self.dataloader:
-            img, labels = data
+            img, labels_tensor = data
             img = img.view(img.size(0), -1)
             img = Variable(img)
             flat_img = img.detach().cpu().numpy()
+            flat_labels = labels_tensor.detach().cpu().numpy()
             if i == 0:
                 origin = copy(flat_img)
+                labels = copy(flat_labels)
             else:
                 origin = np.concatenate([origin, flat_img])
+                labels = np.concatenate([labels, flat_labels])
             i += 1
 
         self.origin = origin
+        self.labels = dict(enumerate(labels.flatten()))
 
     def _evaluate_model(self, encoder):
         i = 0
@@ -62,28 +66,30 @@ class DistanceCalculator:
         self._get_original_samples()
         self._evaluate_model(encoder)
 
-    @staticmethod
-    def _compute_distance(elements):
+    def _compute_distance(self, elements, size=200):
         distances_dict = dict()
-        distances_dict['cityblock'] = _compute_norm(elements, 1)
-        distances_dict['euclidean'] =_compute_norm(elements, 2)
+        distances_dict['cityblock'] = self._compute_norm(elements, norm=1, size=size)
+        distances_dict['euclidean'] = self._compute_norm(elements, norm=2, size=size)
         return distances_dict
 
-    @staticmethod
-    def _compute_norm(elements, size=200, norm=2):
+    def _compute_norm(self, elements, size=200, norm=2):
         """
         elements: concatenated array of N samples with shape (N, dimension)
         """
-        min_distances = {}
+        min_distances_idx = {}
+        min_distances_values = {}
+        min_distances_labels = {}
 
         for idx_f, item_f in enumerate(elements):
             distances_tmp = []
             for item_s in elements:
                 distances_tmp.append(float(np.linalg.norm(item_f - item_s, ord=norm)))
 
-            min_distances[idx_f] = sorted(range(len(distances_tmp)), key=lambda i: distances_tmp[i])[1:size]
+            min_distances_idx[idx_f] = sorted(range(len(distances_tmp)), key=lambda i: distances_tmp[i])[1:size]
+            min_distances_values[idx_f] = sorted(distances_tmp)[1:size]
+            min_distances_labels[idx_f] = [self.labels[i] for i in min_distances_idx[idx_f]]
 
-        return min_distances
+        return min_distances_idx, min_distances_values, min_distances_labels
 
     def _compute_origin_distance(self):
         self.original_distances = self._compute_distance(self.origin)

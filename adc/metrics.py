@@ -14,9 +14,11 @@ def compute_estimators(origin, encoded):
     """gets origin and encoded distances and returns mean and std"""
     estimators = dict()
     for name, samples in {'origin': origin, 'encoded': encoded}.items():
-        for dist_type, dist_vector in samples.items():
-            estimators[name + '_' + dist_type + '_avg'] = np.average(dist_vector)
-            estimators[name + '_' + dist_type + '_std'] = np.std(dist_vector)
+        for dist_type, min_dist_tuple in samples.items():
+            idx_dict, dist_dict, labels_dict = min_dist_tuple
+            for sample_idx, dist_vector in dist_dict.items():
+                estimators[name + '_' + dist_type + '_avg'] = np.average(dist_vector)
+                estimators[name + '_' + dist_type + '_std'] = np.std(dist_vector)
 
     return estimators
 
